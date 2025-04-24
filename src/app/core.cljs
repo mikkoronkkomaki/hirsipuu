@@ -56,73 +56,83 @@
              win              (win? normalized-words guesses)
              grid             (crossword-grid guesses)]
 
-         ($ :div {:style {:font-family      "monospace"
-                          :padding          "2em"
-                          :background-color "#e0f7fa"
-                          :min-height       "100vh"
-                          :display "flex"
-                          :flex-direction "column"
-                          :align-items "center"
-                          :gap "10px"}}
+         ($ :div {:style {:background-image    "url('/background.jpg')"
+                          :background-size     "cover"
+                          :background-position "bottom right"
+                          :background-repeat   "no-repeat"
+                          :min-height          "100vh"
+                          :padding             "2em"
+                          :font-family         "monospace"
+                          }}
 
-            ($ :h1 {:style {:color "#0277bd"} :text-align "center"} "Arvaa kokonimi!")
 
-            ;; Ruuturuudukko
-            ($ :div
-               (for [[y row] (map-indexed vector grid)]
-                 ($ :div {:key y :style {:height "2em" :margin "0.5px"}}
-                    (for [[x cell] (map-indexed vector row)]
-                      ($ :div {:key   (str y "-" x)
-                               :style {:display          "inline-block"
-                                       :width            "2em"
-                                       :height           "2em"
-                                       :text-align       "center"
-                                       :vertical-align   "middle"
-                                       :line-height      "2em"
-                                       :font-weight      "bold"
-                                       :border-right     (when (not= cell " ") "0.5px solid #0288d1")
-                                       :border-bottom    (when (not= cell " ") "0.5px solid #0288d1")
-                                       :border-left      (when (and (not= cell " ") (= x 0)) "0.5px solid #0288d1")
-                                       :border-top       (when (and (not= cell " ") (= y 0)) "0.5px solid #0288d1")
-                                       :background-color (when (not= cell " ") "#b3e5fc")
-                                       :border-radius    "2px"
-                                       :margin           "0.5px"}}
-                         cell)))))
+            ($ :div {:style {:position         "absolute"
+                             :top              0 :left 0 :right 0 :bottom 0
+                             :background-color "rgba(255,255,255,0.7)"
+                             :z-index          1
+                             :display             "flex"
+                             :flex-direction      "column"
+                             :align-items         "center"}}
 
-            ($ :p {:style {:color      "#01579b"
-                           :margin-top "1em"
-                           :font-size  "1.1em"}}
-               (str "Virheiden määrä: " incorrect " / " max-mistakes))
+               ($ :h1 {:style {:color "#0277bd"} :text-align "center" :class "cherry-bomb-one-regular"} "Arvaa kokonimi!")
 
-            (if-not over?
-              ;; Kirjainnäppäimet
-              ($ :div {:style {:margin "1em 0"}}
-                 (for [c (all-letters)]
-                   ($ :button {:key      c
-                               :style    {:margin           "0.2em"
-                                          :padding          "0.5em"
-                                          :background-color (if (guesses c) "#b0bec5" "#4fc3f7")
-                                          :color            "white"
-                                          :border           "none"
-                                          :border-radius    "4px"
-                                          :cursor           (if (guesses c) "not-allowed" "pointer")}
-                               :disabled (guesses c)
-                               :on-click #(set-guesses! conj c)}
-                      c)))
-              ;; Pelin lopetus
-              ($ :div {:style {:margin-top "1em"}}
-                 ($ :h2 {:style {:color (if win "#2e7d32" "#c62828")}}
-                    (if win "Voitit!" "Hävisit!"))
-                 ($ :p (str "Kokonimi on: " (str/join ", " words)))
-                 ($ :button {:on-click #(set-guesses! #{})
-                             :style    {:margin-top       "0.5em"
-                                        :padding          "0.5em 1em"
-                                        :background-color "#0288d1"
-                                        :color            "white"
-                                        :border           "none"
-                                        :border-radius    "4px"
-                                        :cursor           "pointer"}}
-                    "Uusi peli"))))))
+               ;; Ruuturuudukko
+               ($ :div
+                  (for [[y row] (map-indexed vector grid)]
+                    ($ :div {:key y :style {:height "2em" :margin "0.5px"}}
+                       (for [[x cell] (map-indexed vector row)]
+                         ($ :div {:key   (str y "-" x)
+                                  :style {:display          "inline-block"
+                                          :width            "2em"
+                                          :height           "2em"
+                                          :text-align       "center"
+                                          :vertical-align   "middle"
+                                          :line-height      "2em"
+                                          :font-weight      "bold"
+                                          :border-right     (when (not= cell " ") "0.5px solid #0288d1")
+                                          :border-bottom    (when (not= cell " ") "0.5px solid #0288d1")
+                                          :border-left      (when (and (not= cell " ") (= x 0)) "0.5px solid #0288d1")
+                                          :border-top       (when (and (not= cell " ") (= y 0)) "0.5px solid #0288d1")
+                                          :background-color (when (not= cell " ") "#ffffff")
+                                          :border-radius    "2px"
+                                          :margin           "0.5px"}}
+                            cell)))))
+
+               ($ :p {:style {:color      "#01579b"
+                              :margin-top "1em"
+                              :font-size  "1.1em"}
+                      :class "cherry-bomb-one-regular"}
+                  (str "Virheiden määrä: " incorrect " / " max-mistakes))
+
+               (if-not over?
+                 ;; Kirjainnäppäimet
+                 ($ :div {:style {:margin "1em 0"}}
+                    (for [c (all-letters)]
+                      ($ :button {:key      c
+                                  :style    {:margin           "0.2em"
+                                             :padding          "0.5em"
+                                             :background-color (if (guesses c) "#b0bec5" "#4fc3f7")
+                                             :color            "white"
+                                             :border           "none"
+                                             :border-radius    "4px"
+                                             :cursor           (if (guesses c) "not-allowed" "pointer")}
+                                  :disabled (guesses c)
+                                  :on-click #(set-guesses! conj c)}
+                         c)))
+                 ;; Pelin lopetus
+                 ($ :div {:style {:margin-top "1em"}}
+                    ($ :h2 {:style {:color (if win "#2e7d32" "#c62828")} :class "cherry-bomb-one-regular"}
+                       (if win "Voitit!" "Hävisit!"))
+                    ($ :p {:class "cherry-bomb-one-regular"} (str "Kokonimi on: " (str/join ", " words)))
+                    ($ :button {:on-click #(set-guesses! #{})
+                                :style    {:margin-top       "0.5em"
+                                           :padding          "0.5em 1em"
+                                           :background-color "#0288d1"
+                                           :color            "white"
+                                           :border           "none"
+                                           :border-radius    "4px"
+                                           :cursor           "pointer"}}
+                       "Uusi peli")))))))
 
 (defn render []
   (uix.dom/render-root ($ app) root))
