@@ -6,13 +6,13 @@
 (defonce root
   (uix.dom/create-root (js/document.getElementById "root")))
 
-(def words ["veini" "alvar" "verneri"])
+(def words ["VEINI" "ALVAR" "VERNERI"])
 
 (defn all-letters []
-  (map str "abcdefghijklmnopqrstuvwxyzåäö"))
+  (map str "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"))
 
 (defn normalize [s]
-  (str/lower-case s))
+  (str/upper-case s))
 
 (defn mistakes [words guesses]
   (let [all-letters (->> words (mapcat seq) (map str) set)]
@@ -25,14 +25,14 @@
 (defn win? [words guesses]
   (every? #(guesses (str %)) (remove #{\space} (apply str words))))
 
-;; Luo ruudukon, johon sanat sijoitettu ristiin
+;; Luo ruudukon, johon nimet sijoitettu ristiin
 (defn crossword-grid [guesses]
   (let [grid       (vec (repeat 8 (vec (repeat 10 " "))))
-        ;; Sanat normalisoituna
-        firstname  (normalize "veini")
-        secondname (normalize "alvar")
-        thirdname  (normalize "verneri")
-        ;; Aseta sanat ruudukkoon
+        ;; Nimet normalisoituna
+        firstname  (normalize "VEINI")
+        secondname (normalize "ALVAR")
+        thirdname  (normalize "VERNERI")
+        ;; Aseta nimet ruudukkoon
         grid       (reduce (fn [g [i c]]
                              (assoc-in g [2 (+ 3 i)] (if (guesses (str c)) (str c) "-")))
                            grid
@@ -59,14 +59,18 @@
          ($ :div {:style {:font-family      "monospace"
                           :padding          "2em"
                           :background-color "#e0f7fa"
-                          :min-height       "100vh"}}
+                          :min-height       "100vh"
+                          :display "flex"
+                          :flex-direction "column"
+                          :align-items "center"
+                          :gap "10px"}}
 
-            ($ :h1 {:style {:color "#0277bd"}} "Hirsipuupeli – Nimi ristikkona")
+            ($ :h1 {:style {:color "#0277bd"} :text-align "center"} "Arvaa kokonimi!")
 
             ;; Ruuturuudukko
             ($ :div
                (for [[y row] (map-indexed vector grid)]
-                 ($ :div {:key y :style {:height "2em"}}
+                 ($ :div {:key y :style {:height "2em" :margin "0.5px"}}
                     (for [[x cell] (map-indexed vector row)]
                       ($ :div {:key   (str y "-" x)
                                :style {:display          "inline-block"
@@ -76,12 +80,13 @@
                                        :vertical-align   "middle"
                                        :line-height      "2em"
                                        :font-weight      "bold"
-                                       :border-right     (when (not= cell " ") "1px solid #0288d1")
-                                       :border-bottom    (when (not= cell " ") "1px solid #0288d1")
-                                       :border-left      (when (and (not= cell " ") (= x 0)) "1px solid #0288d1")
-                                       :border-top       (when (and (not= cell " ") (= y 0)) "1px solid #0288d1")
+                                       :border-right     (when (not= cell " ") "0.5px solid #0288d1")
+                                       :border-bottom    (when (not= cell " ") "0.5px solid #0288d1")
+                                       :border-left      (when (and (not= cell " ") (= x 0)) "0.5px solid #0288d1")
+                                       :border-top       (when (and (not= cell " ") (= y 0)) "0.5px solid #0288d1")
                                        :background-color (when (not= cell " ") "#b3e5fc")
-                                       :border-radius    "4px"}} ;; pehmeämpi ulkoasu
+                                       :border-radius    "2px"
+                                       :margin           "0.5px"}}
                          cell)))))
 
             ($ :p {:style {:color      "#01579b"
@@ -108,7 +113,7 @@
               ($ :div {:style {:margin-top "1em"}}
                  ($ :h2 {:style {:color (if win "#2e7d32" "#c62828")}}
                     (if win "Voitit!" "Hävisit!"))
-                 ($ :p (str "Sanat olivat: " (str/join ", " words)))
+                 ($ :p (str "Kokonimi on: " (str/join ", " words)))
                  ($ :button {:on-click #(set-guesses! #{})
                              :style    {:margin-top       "0.5em"
                                         :padding          "0.5em 1em"
